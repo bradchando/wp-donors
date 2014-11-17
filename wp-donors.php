@@ -1,4 +1,5 @@
 <?php
+
 /*
 Plugin Name: WP-Donors
 Plugin URI: https://github.com/bradchando/wp-donors
