@@ -9,3 +9,24 @@ Author: Brad Chandonnet
 Author URI: http://bradchandonnet.com
 License: GPLv2
 */
+
+add_action( 'init', 'wpd_register_post_types' );
+
+function wpd_register_post_types() {
+
+	$labels = array(
+			'name' => 'Donations',
+			'singular_name' => 'Donation',
+			'add_new' => 'Record a New Donation',
+			'add_new_item' => 'Record a New Donation',
+			'all_items' => 'All Donations',
+			'menu_name' => 'Donations'
+	);
+
+	$args = array(
+			'labels' => $labels,
+			'public' => true,
+	);
+
+	register_post_type( 'donations', $args);
+}
