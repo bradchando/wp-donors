@@ -72,15 +72,17 @@ add_action('add_meta_boxes', 'wpd_add_meta_boxes');
 
 function wpd_donation_details_meta_box ($post){
 
-	//set meta data is already exists
+	//set meta data if already exists
 	$wpd_donation_amount 	= get_post_meta($post->ID,'_wpd_donation_amount',1);
 	$wpd_missions_amount 	= get_post_meta($post->ID,'_wpd_missions_amount',1);
+	$wpd_missions_notes		= get_post_meta($post->ID,'_wpd_missions_notes',1);
 	$wpd_other_amount 		= get_post_meta($post->ID,'_wpd_other_amount',1);
+	$wpd_other_notes		= get_post_meta($post->ID,'_wpd_other_notes',1);
 	$wpd_check_number 		= get_post_meta($post->ID,'_wpd_check_number',1);
 	$wpd_donor_id			= get_post_meta($post->ID,'_wpd_donor_id', 1);
 
-	//build donor select options
-	$donor_list = get_users('orderby=nicename&order=ASC');
+	//build a list of donors sorted by last name
+	$donor_list = get_users('orderby=meta_value&meta_key=last_name&order=ASC');
 
 	?>
 	<p>
@@ -107,9 +109,11 @@ function wpd_donation_details_meta_box ($post){
 	</p>
 	<p>
 		Designated Missions: $<input type="text" name="missions_amount" id="missions_amount" value="<?php echo $wpd_missions_amount; ?>">
+		Notes: <input type="text" name="missions_notes" id="missions_notes" value="<?php echo $wpd_missions_notes; ?>">
 	</p>
 	<p>
 		Designated Other: $<input type="text" name="other_amount" id="other_amount" value="<?php echo $wpd_other_amount; ?>">
+		Notes: <input type="text" name="other_notes" id="other_notes" value="<?php echo $wpd_other_notes; ?>">
 	</p>
 	<p>
 		Check Number: <input type="text" name="check_number" id="check_number" value="<?php echo $wpd_check_number; ?>">
@@ -144,8 +148,14 @@ function wpd_donations_save_post($post_id){
 	if (isset($_POST['missions_amount'])){
 		update_post_meta( $post_id, '_wpd_missions_amount', $_POST['missions_amount']);
 	}
+	if (isset($_POST['missions_notes'])){
+		update_post_meta( $post_id, '_wpd_missions_notes', $_POST['missions_notes']);
+	}
 	if (isset($_POST['other_amount'])){
 		update_post_meta( $post_id, '_wpd_other_amount', $_POST['other_amount']);
+	}
+	if (isset($_POST['other_notes'])){
+		update_post_meta( $post_id, '_wpd_other_notes', $_POST['other_notes']);
 	}
 	if (isset($_POST['check_number'])){
 		update_post_meta( $post_id, '_wpd_check_number', $_POST['check_number']);
