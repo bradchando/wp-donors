@@ -101,7 +101,7 @@ function wpd_donation_details_meta_box ($post){
 		</select> (<a href="user-new.php">Add New Donor</a>)
 	</p>
 	<p>
-		Donation Amount: <input type="text" name="donation_amount" id="donation_amount" value="<?php echo $wpd_donation_amount; ?>">
+		Donation Amount: $<input type="text" name="donation_amount" id="donation_amount" value="<?php echo $wpd_donation_amount; ?>">
 	</p>
 		Check Number: <input type="text" name="check_number" id="check_number" value="<?php echo $wpd_check_number; ?>">
 	</p>
@@ -148,23 +148,28 @@ add_action('save_post', 'wpd_donations_save_post');
 
 function custom_donation_title( $post_id, $post ){
 	if( $post->post_type == 'donations' ){
-		
+	
 		//find out the user id of the donor
 		$donor_id = get_post_meta($post->ID,'_wpd_donor_id', 1);
-		
-		//pull the donor's information from the WP users table
-		$donor_info = get_userdata($donor_id);
 
-		//build the donation post's title from a combination of donor and donation information
-		$new_title = $donor_info->last_name . ", ". $donor_info->first_name ." - $". get_post_meta($post->ID,'_wpd_donation_amount', 1); // get post_meta and create post title
-		
-		global $wpdb;
-		
-		$wpdb->update(
-			$wpdb->posts,
-			array( 'post_title' => $new_title ),
-			array( 'ID' => $post_id )
-		);
+		//only continue if we have valid meta data to work with
+		if( $donor_id > 0 ){
+
+			//pull the donor's information from the WP users table
+			$donor_info = get_userdata($donor_id);
+
+			//build the donation post's title from a combination of donor and donation information
+			$new_title = $donor_info->last_name . ", ". $donor_info->first_name ." - $". get_post_meta($post->ID,'_wpd_donation_amount', 1); // get post_meta and create post title
+			
+			global $wpdb;
+			
+			$wpdb->update(
+				$wpdb->posts,
+				array( 'post_title' => $new_title ),
+				array( 'ID' => $post_id )
+			);
+
+		}
 	}
 } 
 
