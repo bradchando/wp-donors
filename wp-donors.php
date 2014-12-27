@@ -74,6 +74,8 @@ function wpd_donation_details_meta_box ($post){
 
 	//set meta data is already exists
 	$wpd_donation_amount 	= get_post_meta($post->ID,'_wpd_donation_amount',1);
+	$wpd_missions_amount 	= get_post_meta($post->ID,'_wpd_missions_amount',1);
+	$wpd_other_amount 		= get_post_meta($post->ID,'_wpd_other_amount',1);
 	$wpd_check_number 		= get_post_meta($post->ID,'_wpd_check_number',1);
 	$wpd_donor_id			= get_post_meta($post->ID,'_wpd_donor_id', 1);
 
@@ -101,8 +103,15 @@ function wpd_donation_details_meta_box ($post){
 		</select> (<a href="user-new.php">Add New Donor</a>)
 	</p>
 	<p>
-		Donation Amount: $<input type="text" name="donation_amount" id="donation_amount" value="<?php echo $wpd_donation_amount; ?>">
+		Total Donation Amount: $<input type="text" name="donation_amount" id="donation_amount" value="<?php echo $wpd_donation_amount; ?>">
 	</p>
+	<p>
+		Designated Missions: $<input type="text" name="missions_amount" id="missions_amount" value="<?php echo $wpd_missions_amount; ?>">
+	</p>
+	<p>
+		Designated Other: $<input type="text" name="other_amount" id="other_amount" value="<?php echo $wpd_other_amount; ?>">
+	</p>
+	<p>
 		Check Number: <input type="text" name="check_number" id="check_number" value="<?php echo $wpd_check_number; ?>">
 	</p>
 
@@ -131,6 +140,12 @@ function wpd_donations_save_post($post_id){
 	//update the meta data
 	if (isset($_POST['donation_amount'])){
 		update_post_meta( $post_id, '_wpd_donation_amount', $_POST['donation_amount']);
+	}
+	if (isset($_POST['missions_amount'])){
+		update_post_meta( $post_id, '_wpd_missions_amount', $_POST['missions_amount']);
+	}
+	if (isset($_POST['other_amount'])){
+		update_post_meta( $post_id, '_wpd_other_amount', $_POST['other_amount']);
 	}
 	if (isset($_POST['check_number'])){
 		update_post_meta( $post_id, '_wpd_check_number', $_POST['check_number']);
