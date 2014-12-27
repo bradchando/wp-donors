@@ -35,14 +35,11 @@ function wpd_register_post_types() {
 	$labels = array(
 			'name' => 'Donations',
 			'singular_name' => 'Donation',
-<<<<<<< HEAD
 			'add_new' => 'Record a New Donation',
 			'add_new_item' => 'Record a New Donation',
 			'edit_item' => 'Edit Donation',
-=======
 			'add_new' => 'New Donation',
 			'add_new_item' => 'New Donation',
->>>>>>> 0399374e80cf39291652caca0c6d7eea465061e7
 			'all_items' => 'All Donations',
 			'menu_name' => 'Donations'
 	);
