@@ -72,8 +72,13 @@ add_action('add_meta_boxes', 'wpd_add_meta_boxes');
 
 function wpd_donation_details_meta_box ($post){
 
+	// Enqueue Datepicker + jQuery UI CSS
+	wp_enqueue_script( 'jquery-ui-datepicker' );
+	wp_enqueue_style( 'jquery-ui-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css', true);
+
 	//set meta data if already exists
 	$wpd_donor_id			= get_post_meta($post->ID,'_wpd_donor_id', 1);
+	$wpd_donation_date		= get_post_meta($post->ID, '_wpd_donation_date', 1);
 	$wpd_donation_amount 	= get_post_meta($post->ID,'_wpd_donation_amount',1);
 	$wpd_donation_method	= get_post_meta($post->ID, '_wpd_donation_method',1);
 	$wpd_check_number 		= get_post_meta($post->ID,'_wpd_check_number',1);
@@ -85,7 +90,19 @@ function wpd_donation_details_meta_box ($post){
 	//build a list of donors sorted by last name
 	$donor_list = get_users('orderby=meta_value&meta_key=last_name&order=ASC');
 
+	//check for saved donation date
+	if($wpd_donation_date == ""){
+		$wpd_donation_date = date("Y-m-d");
+	}
+
 	?>
+	<script>
+		jQuery(document).ready(function(){
+			jQuery('#donation_date').datepicker({
+				dateFormat : 'yy-mm-dd'
+			});
+		});
+	</script>
 	<p>
 		Donor: 
 		<select name="donor_id" id="donor_id">
@@ -104,6 +121,9 @@ function wpd_donation_details_meta_box ($post){
 				}
 			?>
 		</select> (<a href="user-new.php">Add New Donor</a>)
+	</p>
+	<p>
+		Donation Date: <input type="text" name="donation_date" id="donation_date" value="<?php echo $wpd_donation_date; ?>">
 	</p>
 	<p>
 		Total Donation Amount: $<input type="text" name="donation_amount" id="donation_amount" value="<?php echo $wpd_donation_amount; ?>">
@@ -147,6 +167,12 @@ function wpd_donations_save_post($post_id){
 	}
 
 	//update the meta data
+	if (isset($_POST['donor_id'])){
+		update_post_meta( $post_id, '_wpd_donor_id', $_POST['donor_id']);
+	}
+	if (isset($_POST['donation_date'])){
+		update_post_meta( $post_id, '_wpd_donation_date', $_POST['donation_date']);
+	}
 	if (isset($_POST['donation_amount'])){
 		update_post_meta( $post_id, '_wpd_donation_amount', $_POST['donation_amount']);
 	}
@@ -168,9 +194,6 @@ function wpd_donations_save_post($post_id){
 	if (isset($_POST['other_notes'])){
 		update_post_meta( $post_id, '_wpd_other_notes', $_POST['other_notes']);
 	}
-	if (isset($_POST['donor_id'])){
-		update_post_meta( $post_id, '_wpd_donor_id', $_POST['donor_id']);
-	}
 }
 
 add_action('save_post', 'wpd_donations_save_post');
@@ -191,8 +214,11 @@ function custom_donation_title( $post_id, $post ){
 			//pull the donor's information from the WP users table
 			$donor_info = get_userdata($donor_id);
 
+			//get the donation date
+			$wpd_donation_date		= get_post_meta($post->ID, '_wpd_donation_date', 1);
+
 			//build the donation post's title from a combination of donor and donation information
-			$new_title = $donor_info->last_name . ", ". $donor_info->first_name ." - $". get_post_meta($post->ID,'_wpd_donation_amount', 1); // get post_meta and create post title
+			$new_title = $wpd_donation_date . " - " . $donor_info->last_name . ", ". $donor_info->first_name ." - $". get_post_meta($post->ID,'_wpd_donation_amount', 1); // get post_meta and create post title
 			
 			global $wpdb;
 			
