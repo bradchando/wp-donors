@@ -7,7 +7,25 @@ Description: This plugin is designed to help organizations keep track of donatio
 Version: 1.0
 Author: Brad Chandonnet
 Author URI: http://bradchandonnet.com
-License: GPLv2
+License: GPLv2+
+*/
+
+/**
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License, version 2 or, at
+* your discretion, any later version, as published by the Free
+* Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+*
 */
 
 add_action( 'init', 'wpd_register_post_types' );
@@ -17,9 +35,14 @@ function wpd_register_post_types() {
 	$labels = array(
 			'name' => 'Donations',
 			'singular_name' => 'Donation',
+<<<<<<< HEAD
 			'add_new' => 'Record a New Donation',
 			'add_new_item' => 'Record a New Donation',
 			'edit_item' => 'Edit Donation',
+=======
+			'add_new' => 'New Donation',
+			'add_new_item' => 'New Donation',
+>>>>>>> 0399374e80cf39291652caca0c6d7eea465061e7
 			'all_items' => 'All Donations',
 			'menu_name' => 'Donations'
 	);
