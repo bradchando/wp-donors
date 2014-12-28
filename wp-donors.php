@@ -218,7 +218,7 @@ function custom_donation_title( $post_id, $post ){
 			$wpd_donation_date		= get_post_meta($post->ID, '_wpd_donation_date', 1);
 
 			//build the donation post's title from a combination of donor and donation information
-			$new_title = $wpd_donation_date . " - " . $donor_info->last_name . ", ". $donor_info->first_name ." - $". get_post_meta($post->ID,'_wpd_donation_amount', 1); // get post_meta and create post title
+			$new_title = $wpd_donation_date . " - " . $donor_info->last_name . ", ". $donor_info->first_name; // get post_meta and create post title
 			
 			global $wpdb;
 			
