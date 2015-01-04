@@ -53,6 +53,13 @@ function wpd_register_post_types() {
 	register_post_type( 'donations', $args);
 }
 
+function wpd_define_taxonomies() {
+
+	register_taxonomy('deposit', 'donations', array( 'hierarchial' => true, 'label' => 'Deposit', 'show_admin_column' => true, 'query_var' => true, 'rewrite' => true ) );
+}
+
+add_action('init', 'wpd_define_taxonomies');
+
 function wpd_add_meta_boxes() {
 
 	add_meta_box(
