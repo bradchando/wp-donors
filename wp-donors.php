@@ -3,8 +3,8 @@
 /*
 Plugin Name: WP-Donors
 Plugin URI: https://github.com/bradchando/wp-donors
-Description: This plugin is designed to help organizations keep track of donations.  It allows donors to log in and view their own giving records.
-Version: 1.0
+Description: This plugin is designed to help organizations keep track of donations.  It has basic reporting functionality. Future development is planned to allow users to login and view their own giving records.
+Version: 1.1
 Author: Brad Chandonnet
 Author URI: http://bradchandonnet.com
 License: GPLv2+
@@ -347,16 +347,6 @@ function get_donations($user_ID,$year){
 		}
 
 		$general = $donation_amount[0] - $missions_amount[0] - $other_amount[0];
-
-	// $wpd_donor_id			= get_post_meta($post->ID,'_wpd_donor_id', 1);
-	// $wpd_donation_date		= get_post_meta($post->ID, '_wpd_donation_date', 1);
-	// $wpd_donation_amount 	= get_post_meta($post->ID,'_wpd_donation_amount',1);
-	// $wpd_donation_method	= get_post_meta($post->ID, '_wpd_donation_method',1);
-	// $wpd_check_number 		= get_post_meta($post->ID,'_wpd_check_number',1);
-	// $wpd_missions_amount 	= get_post_meta($post->ID,'_wpd_missions_amount',1);
-	// $wpd_missions_notes		= get_post_meta($post->ID,'_wpd_missions_notes',1);
-	// $wpd_other_amount 		= get_post_meta($post->ID,'_wpd_other_amount',1);
-	// $wpd_other_notes		= get_post_meta($post->ID,'_wpd_other_notes',1);
 				
 		$report .= '<tr class="' . $row_style . '"><td>' . $donation_date[0] . '</td><td>' . $d_method . '</td><td>' . $general . '</td><td>' . $missions_amount[0] . '</td><td>' . $other_amount[0] . '</td><td>$' . $donation_amount[0] . '</td></tr>';
 
