@@ -28,6 +28,13 @@ License: GPLv2+
 *
 */
 
+add_action( 'wp_enqueue_scripts', 'wpds_register_scripts' );
+
+function wpds_register_scripts() {
+    wp_enqueue_style( 'wpd-styles', plugins_url( 'css/wpd.css', __FILE__ ), array(), '' );
+    //wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
+}
+
 add_action( 'init', 'wpd_register_post_types' );
 
 function wpd_register_post_types() {
@@ -240,3 +247,139 @@ function custom_donation_title( $post_id, $post ){
 } 
 
 add_action( 'save_post', 'custom_donation_title', 20, 2 );
+
+/*
+* Master Reporting Shortcode
+*/
+
+add_shortcode( 'full_report', 'render_full_report');
+
+function render_full_report($attr){
+
+	$year = $attr['year'];
+
+	$output = '<div id="report_start"> </div>';
+
+	$blogusers = get_users( 'orderby=display_name&order=ASC' );
+	// Array of WP_User objects.
+	foreach ( $blogusers as $user ) {
+		$output .= '<h2>Gospel Light Baptist Church - Ludington, MI</h2>';
+		$output .= '<h3>' . esc_html( $user->user_firstname ) . ' ' . esc_html( $user->user_lastname ) . '<br>' . $year . ' Giving Report</h3>';
+		$output .= get_donations($user->ID,$year);
+		$output .= '<p>Contributions are tax-deductible to the extent allowed by law. No goods or services were provided in exchange for donations.</p>';
+
+		$output .= '<hr>';
+	}
+
+	return($output);
+}
+
+function get_donations($user_ID,$year){
+
+	$year_start = $year . '-01-01';
+	$year_end = $year . '-12-31';
+
+	$args = array(
+		'post_type' => 'donations',
+		'posts_per_page' => -1,
+		'meta_query' => array(
+			array(
+				'key'     => '_wpd_donor_id',
+				'value'   => $user_ID,
+				'compare' => '=',
+			),
+			array(
+				'key' => '_wpd_donation_date',
+				'value'   => array( $year_start, $year_end ),
+				'compare' => 'BETWEEN',
+			),
+		),
+		'meta_key' => '_wpd_donor_id',
+		'meta_value' => $user_ID,
+		'orderby' => '_wpd_donation_date',
+		'order' => 'DESC'
+	);
+
+	$report_query = new WP_Query($args);
+
+	//debug($report_query);
+
+	$total = 0;
+	$missions_total = 0;
+	$other_total = 0;
+	$count = 0;
+
+	$report = '<table class="giving_report">';
+	$report .= '<tr class="total_row"><th>Date</th><th>Donation Method</th><th>General</th><th>Missions</th><th>Special</th><th>Total</th></tr>';
+
+	if ( $report_query->have_posts() ) :
+	while($report_query->have_posts()): $report_query->the_post();
+		
+		$donation_date = get_post_meta( get_the_ID(), '_wpd_donation_date' );
+		$donation_amount = get_post_meta( get_the_ID(), '_wpd_donation_amount' );
+		$donation_method = get_post_meta( get_the_ID(), '_wpd_donation_method');
+		$missions_amount = get_post_meta( get_the_ID(), '_wpd_missions_amount');
+		$missions_note = get_post_meta( get_the_ID(), '_wpd_missions_notes');
+		$other_amount = get_post_meta( get_the_ID(), '_wpd_other_amount');
+		$other_note = get_post_meta( get_the_ID(), '_wpd_other_notes');
+
+		//Format some strings
+
+		if($donation_method[0] == 'check') {
+			$check_number = get_post_meta( get_the_ID(), '_wpd_check_number');
+			$d_method = 'check #' . $check_number[0];
+		} else{
+			$d_method = 'cash';
+		}
+
+
+		// Keep track of totals
+		
+		$total += $donation_amount[0];
+
+		// Set row style variable
+		$count++;
+		
+		if(($count % 2) == 1 ) {
+			$row_style = 'odd_row';
+		}else{
+			$row_style = 'even_row';
+		}
+
+		$general = $donation_amount[0] - $missions_amount[0] - $other_amount[0];
+
+	// $wpd_donor_id			= get_post_meta($post->ID,'_wpd_donor_id', 1);
+	// $wpd_donation_date		= get_post_meta($post->ID, '_wpd_donation_date', 1);
+	// $wpd_donation_amount 	= get_post_meta($post->ID,'_wpd_donation_amount',1);
+	// $wpd_donation_method	= get_post_meta($post->ID, '_wpd_donation_method',1);
+	// $wpd_check_number 		= get_post_meta($post->ID,'_wpd_check_number',1);
+	// $wpd_missions_amount 	= get_post_meta($post->ID,'_wpd_missions_amount',1);
+	// $wpd_missions_notes		= get_post_meta($post->ID,'_wpd_missions_notes',1);
+	// $wpd_other_amount 		= get_post_meta($post->ID,'_wpd_other_amount',1);
+	// $wpd_other_notes		= get_post_meta($post->ID,'_wpd_other_notes',1);
+				
+		$report .= '<tr class="' . $row_style . '"><td>' . $donation_date[0] . '</td><td>' . $d_method . '</td><td>' . $general . '</td><td>' . $missions_amount[0] . '</td><td>' . $other_amount[0] . '</td><td>$' . $donation_amount[0] . '</td></tr>';
+
+	endwhile;
+	
+
+	endif;
+
+	//debug($report_query);
+	$report .= '<tr class="total_row"><td></td><td></td><td></td><td></td><td>TOTAL:</td><td> $' . $total . '</td></tr>';
+	$report .= '</table>';
+
+	return($report);
+}
+
+/*******************************************************************************
+ ** DEBUG MESSAGES ON SCREEN **
+ *******************************************************************************/
+
+if ( !function_exists('debug') ) {
+	function debug($var = false) {
+		echo "\n<pre class=\"debug\" style=\"background: #FFFF99; font-size: 10px;\">\n";
+		$var = print_r($var, true);
+		echo $var . "\n</pre>\n";
+	}
+}

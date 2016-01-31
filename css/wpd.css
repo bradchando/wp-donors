@@ -1,0 +1,5 @@
+@media print {
+    hr, #report_start {page-break-after: always;}
+    table{font-size: .8em;}
+    td{ text-align: center; padding: 5px;}
+}
